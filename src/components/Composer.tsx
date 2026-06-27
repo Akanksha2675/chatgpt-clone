@@ -1,3 +1,6 @@
+import { ArrowUpRight01Icon } from '@hugeicons/core-free-icons';
+import { HugeiconsIcon } from '@hugeicons/react';
+
 interface ComposerProps {
     value: string;
     onChange: (content: string) => void;
@@ -44,7 +47,7 @@ export default function Composer({ value, onChange, onSend, model, onModelChange
                 onClick={() => onSend(value)}
                 className="ml-2 bg-black text-white disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 rounded-full"
             >
-                Send
+                <HugeiconsIcon icon={ArrowUpRight01Icon} />
             </button>
             
         </div>

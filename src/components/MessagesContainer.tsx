@@ -1,6 +1,7 @@
-import { useEffect } from "react";
 import type { Message } from "../types";
-
+import { useEffect } from "react";
+import markdownit from 'markdown-it'
+const md = markdownit()
 
 interface MessagesContainerProps {
     messages: Message[];
@@ -10,6 +11,13 @@ interface MessagesContainerProps {
 }
 
 export default function MessagesContainer( { messages, isLoading, error, retry }: MessagesContainerProps ) {
+
+    useEffect(() => {
+        const messagesEnd = document.getElementById("messages-end");
+        if (messagesEnd) {
+            messagesEnd.scrollIntoView(true);
+        }
+    })
 
     return (
         <div className="flex-1 overflow-y-auto p-4">
@@ -22,7 +30,10 @@ export default function MessagesContainer( { messages, isLoading, error, retry }
                     messages.map((message) => (
                         <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
                             <div className={`max-w-[85%] rounded-full px-4 py-3 text-sm leading-6 ${message.role === "user" ? "bg-white text-slate-950" : "text-black"}`}>
-                                {message.content}
+                                <div
+                                    dangerouslySetInnerHTML={{ __html: md.render(message.content)}}
+                                  />
+                                
                             </div>
                         </div>
                     ))
@@ -45,6 +56,8 @@ export default function MessagesContainer( { messages, isLoading, error, retry }
                     </button>
                 </div>
             )}
+
+            <div id="messages-end" />
         </div>
     )
 }

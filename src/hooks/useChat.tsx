@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Message } from "../types";
-import { getChatResponse } from "../api/chat";
+import { getChatResponse, getChatStreamResponse } from "../api/chat";
 
 export default function useChat() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -26,16 +26,25 @@ export default function useChat() {
 
       setIsLoading(true);
 
-      // call the Gemini API.
-      const groqResponse: string = await getChatResponse(updatedMessages, model);
+      await getChatStreamResponse(updatedMessages, model, (data: string) => {
+        setMessages((messages) => {
+          const lastMessage = messages[messages.length - 1];
 
-      const assistantMessage: Message = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content: groqResponse,
-      };
+          if (lastMessage.role !== "assistant") {
+            const assistantMessage: Message = {
+              id: crypto.randomUUID(),
+              role: "assistant",
+              content: data,
+            }
 
-      setMessages((prev) => [...prev, assistantMessage]);
+            return [...messages, assistantMessage];
+
+          } else {
+            return [...messages.slice(0, messages.length-1), { ...lastMessage, content: lastMessage.content + data}]
+          }  
+        });
+    })
+      
 
     } catch (error) {
       console.error("Error sending message:", error);
