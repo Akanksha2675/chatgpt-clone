@@ -63,6 +63,8 @@ export default function useChat() {
 
       setMessages((messages) => [...messages, assistantMessage]);
 
+      setError(null);
+
     } catch (error) {
       console.error("Error retrying message:", error);
       setError(`Failed to retry message to groq: ${String(error)}`);
