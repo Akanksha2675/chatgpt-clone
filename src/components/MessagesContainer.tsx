@@ -29,7 +29,7 @@ export default function MessagesContainer( { messages, isLoading, error, retry }
                 {
                     messages.map((message) => (
                         <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
-                            <div className={`max-w-[85%] rounded-full px-4 py-3 text-sm leading-6 ${message.role === "user" ? "bg-white text-slate-950" : "text-black"}`}>
+                            <div className={`max-w-[85%] px-4 py-3 text-sm leading-6 ${message.role === "user" ? "bg-emerald-700 text-white rounded-full" : "text-slate-800 rounded-2xl"}`}>
                                 <div
                                     dangerouslySetInnerHTML={{ __html: md.render(message.content)}}
                                   />
@@ -41,7 +41,13 @@ export default function MessagesContainer( { messages, isLoading, error, retry }
                 </div>
             }
 
-            {isLoading && <div className="flex justify-start p-4 text-black"> Loading... </div> }
+            {isLoading && (
+                <div className="flex justify-start p-4 gap-1 items-center">
+                    <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:0ms]" />
+                    <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:150ms]" />
+                    <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:300ms]" />
+                </div>
+            )}
             
             {error && (
                 <div className="flex items-center justify-between rounded-full max-w-[60%] p-2 bg-white ">
