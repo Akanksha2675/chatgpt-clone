@@ -8,6 +8,37 @@ export default function useChat() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [model, setModel] = useState("llama-3.3-70b-versatile");
+  const [file, setFile] = useState<File | null>(null);
+  const [ingestStatus, setIngestStatus] = useState<string | null>(null);
+
+  const handleFileIngestion = async (nextFile: File | null) => {
+    setFile(nextFile);
+    setIngestStatus(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('pdf-file', nextFile as Blob);
+
+      setIngestStatus("Ingesting file...");
+
+      const response = await fetch('http://localhost:3000/documents/ingest', {
+        method: 'POST',
+        body: formData,
+      })
+
+      
+      if (!response.ok) {
+        throw new Error(`Failed to ingest file: ${response.statusText}`);
+      }
+
+      setIngestStatus("Ingestion successful")
+
+    } catch (error) {
+      console.log("Error ingesting file:", error);
+      setIngestStatus("Ingestion failed");
+    }
+
+  }
 
   const sendMessage = async () => {
     try {
@@ -94,5 +125,8 @@ export default function useChat() {
     retry,
     model,
     setModel,
+    file,
+    handleFileIngestion,
+    ingestStatus,
   };
 }

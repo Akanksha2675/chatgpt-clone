@@ -14,7 +14,7 @@ export default function Composer({ value, onChange, onSend, model, onModelChange
 
     return (
 
-        <div className="flex items-center bg-white rounded-full p-2 mx-4 mb-6"> 
+        <div className="flexitems-center bg-white rounded-full p-2 mx-4 mb-6"> 
             <input
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
