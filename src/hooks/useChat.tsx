@@ -10,16 +10,29 @@ export default function useChat() {
   const [model, setModel] = useState("llama-3.3-70b-versatile");
   const [file, setFile] = useState<File | null>(null);
   const [ingestStatus, setIngestStatus] = useState<string | null>(null);
-
-  const handleFileIngestion = async (nextFile: File | null) => {
+  const [url, setUrl] = useState<string>("");
+  // Selecting a file (or typing a URL) just updates local state now;
+  // the actual request goes out via handleIngestSubmit so both inputs
+  // can be sent together.
+  const handleFileSelect = (nextFile: File | null) => {
     setFile(nextFile);
     setIngestStatus(null);
+  };
+
+  const handleIngestSubmit = async () => {
+    const trimmedUrl = url.trim();
+
+    if (!file && !trimmedUrl) {
+      setIngestStatus("Provide a PDF, a URL, or both.");
+      return;
+    }
 
     try {
       const formData = new FormData();
-      formData.append('pdf-file', nextFile as Blob);
+      if (file) formData.append('pdf-file', file);
+      if (trimmedUrl) formData.append('url', trimmedUrl);
 
-      setIngestStatus("Ingesting file...");
+      setIngestStatus("Ingesting...");
 
       const response = await fetch('http://localhost:3000/documents/ingest', {
         method: 'POST',
@@ -28,13 +41,13 @@ export default function useChat() {
 
       
       if (!response.ok) {
-        throw new Error(`Failed to ingest file: ${response.statusText}`);
+        throw new Error(`Failed to ingest: ${response.statusText}`);
       }
 
       setIngestStatus("Ingestion successful")
 
     } catch (error) {
-      console.log("Error ingesting file:", error);
+      console.log("Error ingesting content:", error);
       setIngestStatus("Ingestion failed");
     }
 
@@ -117,6 +130,8 @@ export default function useChat() {
 
   return {
     messages,
+    url,
+    setUrl,
     input,
     setInput,
     sendMessage,
@@ -126,7 +141,8 @@ export default function useChat() {
     model,
     setModel,
     file,
-    handleFileIngestion,
+    handleFileSelect,
     ingestStatus,
+    handleIngestSubmit,
   };
 }
